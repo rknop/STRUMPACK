@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
-project(STRUMPACK VERSION 7.1.2 LANGUAGES CXX C Fortran)
+project(STRUMPACK VERSION 7.1.3 LANGUAGES CXX C Fortran)
 cmake_policy(SET CMP0074 NEW)
 
 option(STRUMPACK_USE_MPI     "Build with MPI support" ON)
@@ -541,7 +541,10 @@ endif()
 
 # this is to fix a link issue for the fortran example when compiling
 # with clang
-set_property(TARGET strumpack PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_target_properties(strumpack PROPERTIES
+  VERSION "${PROJECT_VERSION}"
+  SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}"
+  POSITION_INDEPENDENT_CODE ON)
 
 
 # see https://github.com/pghysels/STRUMPACK/issues/82
