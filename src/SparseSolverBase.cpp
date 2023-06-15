@@ -146,10 +146,32 @@ namespace strumpack {
     if (opts_.matching() != MatchingJob::NONE)
       return ReturnCode::INACCURATE_INERTIA;
     if (!this->factored_) {
-      ReturnCode ierr = this->factor();
+      auto ierr = this->factor();
       if (ierr != ReturnCode::SUCCESS) return ierr;
     }
     return tree()->inertia(neg, zero, pos);
+  }
+
+  template<typename scalar_t,typename integer_t> ReturnCode
+  SparseSolverBase<scalar_t,integer_t>::log_determinant
+  (scalar_t& ldet) {
+    ldet = scalar_t(0.);
+    if (opts_.matching() != MatchingJob::NONE)
+      return ReturnCode::INACCURATE_INERTIA;
+    if (!this->factored_) {
+      auto ierr = this->factor();
+      if (ierr != ReturnCode::SUCCESS) return ierr;
+    }
+    integer_t N = matrix()->size();
+    if (this->equil_.type == EquilibrationType::COLUMN ||
+        this->equil_.type == EquilibrationType::BOTH)
+      for (integer_t i=0; i<N; i++)
+        ldet += std::log(equil_.C[i]);
+    if (this->equil_.type == EquilibrationType::ROW ||
+        this->equil_.type == EquilibrationType::BOTH)
+      for (integer_t i=0; i<N; i++)
+        ldet += std::log(equil_.R[i]);
+    return tree()->log_determinant(ldet);
   }
 
   template<typename scalar_t,typename integer_t> void

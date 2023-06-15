@@ -397,6 +397,17 @@ namespace strumpack {
     return node_inertia(neg, zero, pos);
   }
 
+  template<typename scalar_t,typename integer_t> ReturnCode
+  FrontalMatrix<scalar_t,integer_t>::log_determinant
+  (scalar_t& ldet) const {
+    ReturnCode el = ReturnCode::SUCCESS, er = ReturnCode::SUCCESS;
+    if (lchild_) el = lchild_->log_determinant(ldet);
+    if (rchild_) er = rchild_->log_determinant(ldet);
+    if (el != ReturnCode::SUCCESS) return el;
+    if (er != ReturnCode::SUCCESS) return er;
+    return node_log_determinant(ldet);
+  }
+
 #if defined(STRUMPACK_USE_MPI)
   template<typename scalar_t,typename integer_t> void
   FrontalMatrix<scalar_t,integer_t>::multifrontal_solve
